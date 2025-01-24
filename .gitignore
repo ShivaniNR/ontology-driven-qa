@@ -1,0 +1,5 @@
+Flask_project/__pycache__/
+*.pyc
+*.pyo
+Flask_project/venv
+requirements-n.txt
