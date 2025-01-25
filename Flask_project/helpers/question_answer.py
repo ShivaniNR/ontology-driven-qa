@@ -128,7 +128,7 @@ def process_question_dynamic(g, question, nlp, ontology_terms, matcher, classes,
                 'instanceOf': []
             }
             for row in results:
-                comment.append(str(row[0]))
+                comment = str(row[0])
 
                 entity_types = row['typeList'].split(',')
                 if any(obj.split('#')[-1] == 'NamedIndividual' for obj in entity_types):

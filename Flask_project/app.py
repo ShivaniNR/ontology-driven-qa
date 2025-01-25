@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from rdflib import Graph
 import spacy
 import sys
@@ -30,7 +30,8 @@ initialize_app_resources()
 
 @app.route("/")
 def home():
-    return "Welcome to the Geological Q&A System!"
+    #return "Welcome to the Geological Q&A System!"
+    return render_template("index.html")
 
 @app.route("/query", methods=["POST"])
 def query():
