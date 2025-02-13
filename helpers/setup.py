@@ -2,9 +2,11 @@ import spacy
 from rdflib import Graph, Namespace, RDFS
 from spacy.matcher import PhraseMatcher
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 # Constants
-ONTOLOGY_FILE = "data/geological_ontology.rdf"
+path = Path("data/geological_ontology.rdf")
+ONTOLOGY_FILE = path
 GEO = Namespace("http://www.semanticweb.org/ontologies/2022/6/geological_taxonomy#")
 
 # Helper Functions

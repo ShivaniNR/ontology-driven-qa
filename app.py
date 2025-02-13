@@ -3,10 +3,10 @@ from rdflib import Graph
 import spacy
 import sys
 import os
-from helpers.setup import initialize_resources
 from helpers.question_answer import process_query
 import time
 import pickle
+from pathlib import Path
 
 # adding Folder_2 to the system path
 #sys.path.insert(0, 'C:\Users\shiva\Music\Resume\Projects\Geological-Ontology\Flask_project\helpers')
@@ -16,7 +16,8 @@ app = Flask(__name__)
 app.config['setup_complete'] = False  # Track setup state
 
 # Load pre-warmed setup data at startup
-with open("setup_data.pkl", "rb") as f:
+path = Path("setup_data.pkl")
+with open(path, "rb") as f:
     g, nlp, ontology_terms, matcher, classes, relations, descriptions, ontology_terms_mapping = pickle.load(f)
 
 
