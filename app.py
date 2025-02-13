@@ -6,6 +6,7 @@ import os
 from helpers.setup import initialize_resources
 from helpers.question_answer import process_query
 import time
+import pickle
 
 # adding Folder_2 to the system path
 #sys.path.insert(0, 'C:\Users\shiva\Music\Resume\Projects\Geological-Ontology\Flask_project\helpers')
@@ -13,6 +14,10 @@ import time
 
 app = Flask(__name__)
 app.config['setup_complete'] = False  # Track setup state
+
+# Load pre-warmed setup data at startup
+with open("setup_data.pkl", "rb") as f:
+    g, nlp, ontology_terms, matcher, classes, relations, descriptions, ontology_terms_mapping = pickle.load(f)
 
 
 
@@ -29,14 +34,14 @@ def setup():
     if not app.config['setup_complete']:
         start_time = time.time()
         # Initialize reusable resources and store them in app config
-        g, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping = initialize_resources()
+        #g, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping = initialize_resources()
         app.config["G"] = g
         app.config["NLP"] = nlp
         app.config["ONTOLOGY_TERMS"] = ontology_terms
         app.config["MATCHER"] = matcher
         app.config["CLASSES"] = classes
         app.config["RELATIONS"] = relations
-        app.config["DESCRIPTION"] = description
+        app.config["DESCRIPTION"] = descriptions
         app.config["ONTOLOGY_MAPPING"] = ontology_terms_mapping
         app.config['setup_complete'] = True
 
