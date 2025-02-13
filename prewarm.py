@@ -1,6 +1,6 @@
 # prewarm.py
 import pickle
-from setup import initialize_resources
+from helpers.setup import initialize_resources
 
 if __name__ == "__main__":
     print("Running pre-warming script...")
