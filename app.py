@@ -16,8 +16,8 @@ app = Flask(__name__)
 app.config['setup_complete'] = False  # Track setup state
 
 # Load pre-warmed setup data at startup
-path = Path("setup_data.pkl")
-with open(path, "rb") as f:
+path = Path(".")
+with open(path/'setup_data.pkl', "rb") as f:
     g, nlp, ontology_terms, matcher, classes, relations, descriptions, ontology_terms_mapping = pickle.load(f)
 
 
