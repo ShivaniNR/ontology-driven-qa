@@ -1,37 +1,57 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from rdflib import Graph
 import spacy
 import sys
 import os
 from helpers.setup import initialize_resources
 from helpers.question_answer import process_query
+import time
 
 # adding Folder_2 to the system path
 #sys.path.insert(0, 'C:\Users\shiva\Music\Resume\Projects\Geological-Ontology\Flask_project\helpers')
 #sys.path.append(os.path.join(os.path.dirname(__file__), 'helpers'))
 
 app = Flask(__name__)
+app.config['setup_complete'] = False  # Track setup state
 
 
-# Initialize reusable resources and store them in app config
-def initialize_app_resources():
-    g, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping = initialize_resources()
-    app.config["G"] = g
-    app.config["NLP"] = nlp
-    app.config["ONTOLOGY_TERMS"] = ontology_terms
-    app.config["MATCHER"] = matcher
-    app.config["CLASSES"] = classes
-    app.config["RELATIONS"] = relations
-    app.config["DESCRIPTION"] = description
-    app.config["ONTOLOGY_MAPPING"] = ontology_terms_mapping
-
-# Initialize resources when the app starts
-initialize_app_resources()
 
 @app.route("/")
 def home():
     #return "Welcome to the Geological Q&A System!"
     return render_template("index.html")
+
+# Setup route
+@app.route('/setup', methods=['POST'])
+def setup():
+    # Your setup logic here
+
+    if not app.config['setup_complete']:
+        start_time = time.time()
+        # Initialize reusable resources and store them in app config
+        g, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping = initialize_resources()
+        app.config["G"] = g
+        app.config["NLP"] = nlp
+        app.config["ONTOLOGY_TERMS"] = ontology_terms
+        app.config["MATCHER"] = matcher
+        app.config["CLASSES"] = classes
+        app.config["RELATIONS"] = relations
+        app.config["DESCRIPTION"] = description
+        app.config["ONTOLOGY_MAPPING"] = ontology_terms_mapping
+        app.config['setup_complete'] = True
+
+    # Initialize resources when the app starts
+        end_time = time.time()
+
+        execution_time = end_time - start_time
+        print(f"Query execution time: {execution_time:.4f} seconds")
+
+    print("Setup function called!")
+    return redirect(url_for('question_page'))
+
+@app.route("/question")
+def question_page():
+    return render_template("question-answer.html")
 
 @app.route("/query", methods=["POST"])
 def query():

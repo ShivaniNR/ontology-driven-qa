@@ -29,21 +29,22 @@ def identify_intent_and_focus(question, nlp, matcher):
     intent = "unknown"
     focus_terms = []
     
-#     for token in doc:
-#         print(token, token.head, token.pos_, token.tag_, token.dep_)
+    # for token in doc:
+    #     print(token, token.head, token.pos_, token.tag_, token.dep_)
     
     # Find root verb and its dependencies
     root = [token for token in doc if token.head == token][0]
     
-#     for child in root.children:
-#         print(child, child.dep_)
+    # for child in root.children:
+    #     print(child, child.dep_)
     
     # Classification intent (e.g., "Types of X?", "What are Y?")
-    if any(token.lemma_ in ["type", "unit", "kind", "different"] for token in doc):
+    if any(token.lemma_ in ["type", "unit", "kind", "different", "subclass", "category", "group", "form", "classification"] for token in doc):
         intent = "classification"
         
     # Definition intent (e.g., "What is X?")
     elif root.lemma_ in ["be", "define", "explain"]:  # Check for linking or defining verbs dynamically
+        #print('inside definition')
         intent = 'definition'
         
     focus_terms = extracted_terms
@@ -51,6 +52,7 @@ def identify_intent_and_focus(question, nlp, matcher):
     
     # Remove stopwords and irrelevant terms from focus_terms
     focus_terms = [term for term in focus_terms if term not in nlp.Defaults.stop_words]
+    #print('final intent', intent, ' and final terms ', focus_terms)
 
     return intent, focus_terms
 
@@ -58,6 +60,9 @@ def identify_intent_and_focus(question, nlp, matcher):
 def generate_dynamic_sparql_query(intent, focus_terms, relations, ontology_terms_mapping):
     if not focus_terms:
         return None
+    
+    #print('focus ',focus_terms)
+    #print('intent ',intent)
     
     focus_term = focus_terms[0]
     
@@ -113,12 +118,12 @@ def generate_dynamic_sparql_query(intent, focus_terms, relations, ontology_terms
 #Questions:
 def process_question_dynamic(g, question, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping):
     processed_question = preprocess_question(question, nlp)
-
+    #print('processed_question ', processed_question)
     #to handle description queries
     intent, focus_terms = identify_intent_and_focus(processed_question, nlp, matcher)
 
     sparql_query = generate_dynamic_sparql_query(intent, focus_terms, relations, ontology_terms_mapping)
-
+    #print(sparql_query)
     if sparql_query:
         results = g.query(sparql_query)
         if intent == 'definition':
@@ -179,6 +184,7 @@ def process_answers(answers, intent):
 def process_query(g, question, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping):
     answers = process_question_dynamic(g, question, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping)
     if answers:
+        #print(answers[0])
         modified_answer = process_answers(answers[0], answers[1])
         return modified_answer
     else:
