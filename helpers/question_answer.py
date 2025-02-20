@@ -2,6 +2,8 @@ import re
 from rdflib import Graph, Namespace, RDF, RDFS
 import spacy
 from spacy.matcher import PhraseMatcher
+from socket_manager import socketio
+import time
 
 #helper
 def format_term(term, ontology_terms_mapping):
@@ -118,36 +120,52 @@ def generate_dynamic_sparql_query(intent, focus_terms, relations, ontology_terms
 #Questions:
 def process_question_dynamic(g, question, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping):
     processed_question = preprocess_question(question, nlp)
+    socketio.emit('execution_step', {"step": "Query preprocessed", "status": "success"})
     #print('processed_question ', processed_question)
     #to handle description queries
     intent, focus_terms = identify_intent_and_focus(processed_question, nlp, matcher)
+    if not intent or not focus_terms:
+        socketio.emit('execution_step', {"step": "Could not identitfy the query", "status": "error"})
+        return None
+    else:
+        socketio.emit('execution_step', {"step": "Identified the query", "status": "success"})
 
     sparql_query = generate_dynamic_sparql_query(intent, focus_terms, relations, ontology_terms_mapping)
+
     #print(sparql_query)
     if sparql_query:
+        socketio.emit('execution_step', {"step": "Searching in the Graph", "status": "success"})
+        time.sleep(3)
         results = g.query(sparql_query)
-        if intent == 'definition':
-            comment = []
-            related_terms = {
-                'subClasses': [], 
-                'instanceOf': []
-            }
-            for row in results:
-                comment = str(row[0])
+        if results:
+            socketio.emit('execution_step', {"step": "Found results!", "status": "success"})
+            time.sleep(1)
+            if intent == 'definition':
+                comment = []
+                related_terms = {
+                    'subClasses': [], 
+                    'instanceOf': []
+                }
+                for row in results:
+                    comment = str(row[0])
 
-                entity_types = row['typeList'].split(',')
-                if any(obj.split('#')[-1] == 'NamedIndividual' for obj in entity_types):
-                    for obj in entity_types:
-                        if obj.split('#')[-1] != 'NamedIndividual':
-                            related_terms['instanceOf'].append(obj)
-                elif any(obj.split('#')[-1] == 'Class' for obj in entity_types):
-                    if str(row['subClassList']) != 'None':
-                        for entity in row['subClassList'].split(','):
-                            related_terms['subClasses'].append(str(entity))
-            return [comment, related_terms], intent
-        
-        elif intent == 'classification':
-            return [str(row[0]) for row in results], intent
+                    entity_types = row['typeList'].split(',')
+                    if any(obj.split('#')[-1] == 'NamedIndividual' for obj in entity_types):
+                        for obj in entity_types:
+                            if obj.split('#')[-1] != 'NamedIndividual':
+                                related_terms['instanceOf'].append(obj)
+                    elif any(obj.split('#')[-1] == 'Class' for obj in entity_types):
+                        if str(row['subClassList']) != 'None':
+                            for entity in row['subClassList'].split(','):
+                                related_terms['subClasses'].append(str(entity))
+                return [comment, related_terms], intent
+            
+            elif intent == 'classification':
+                return [str(row[0]) for row in results], intent
+        else:
+            socketio.emit('execution_step', {"step": "Search Failed!", "status": "error"})
+            return []
+    socketio.emit('execution_step', {"step": "Search Failed!", "status": "error"})
     return []
 
 #Answers:
@@ -182,10 +200,12 @@ def process_answers(answers, intent):
 
 #Query:
 def process_query(g, question, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping):
+    socketio.emit('execution_step', {"step": "Query received", "status": "success"})
     answers = process_question_dynamic(g, question, nlp, ontology_terms, matcher, classes, relations, description, ontology_terms_mapping)
     if answers:
-        #print(answers[0])
         modified_answer = process_answers(answers[0], answers[1])
+        socketio.emit('execution_step', {"step": "Formatting answer", "status": "success"})
+        socketio.emit('execution_step', {"step": "Process complete", "status": "success"})
         return modified_answer
     else:
         return 'No Data Found. Check the entities or reformate the question.'

@@ -15,10 +15,21 @@
             <button type="submit">Submit</button>
         </form>
         <div id="response">
-            <h2>Answer:</h2>
-            <p id="answer"></p>
+            <div id="process_flow_horizontally">
+                <!--<svg id="flow-char_horizontal" width="800" height="150"></svg>   SVG for horizontal circles -->
+            </div>
+            <div id="answer-container">
+                <h2>Answer:</h2>
+                <p id="answer"></p>
+            </div>  
+            <!--<div id="process_flow">
+                <h3>Execution Flow:</h3>
+                <svg id="flow-chart" width="600" height="400"></svg>  <!-- D3 Visualization Here ->
+            </div-->
+            <!--<svg id="flow-chart"></svg>-->
         </div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </body>
 </html>

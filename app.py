@@ -7,12 +7,14 @@ from helpers.question_answer import process_query
 import time
 import pickle
 from pathlib import Path
+from socket_manager import socketio
 
 # adding Folder_2 to the system path
 #sys.path.insert(0, 'C:\Users\shiva\Music\Resume\Projects\Geological-Ontology\Flask_project\helpers')
 #sys.path.append(os.path.join(os.path.dirname(__file__), 'helpers'))
 
 app = Flask(__name__)
+socketio.init_app(app)  # Initialize SocketIO
 
 # Load pre-warmed setup data at startup
 path = Path("setup_data.pkl")
@@ -65,5 +67,6 @@ def query():
         }), 200
 
 if __name__ == "__main__":
-    app.run()
+    #app.run(debug=True)
+    socketio.run(app)
 

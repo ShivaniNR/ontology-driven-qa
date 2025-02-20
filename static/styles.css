@@ -53,10 +53,6 @@ h1 {
     margin-bottom: 10px;
 }
 
-form {
-    margin-bottom: 20px;
-}
-
 input {
     width: calc(100% - 20px);
     padding: 8px;
@@ -88,21 +84,162 @@ button:hover {
 }
 
 #response {
-    display: none;
+   /* display: flex;             Enables Flexbox */
+    display: block;
     width: 80%;
-    text-align: justify;
-    margin: auto;
+    justify-content: space-between; /* Space between children */
+    align-items: flex-start;   /* Align items at the top */
+    gap: 20px;                /* Adds spacing between elements */
+    padding: 20px;
+    /* max-width: 900px;         Limit width for a balanced layout */
+    margin: 0 auto;
 }
 
 #answer {
     color: #333;
+    width: inherit;
 }
 
 .list-answer-container{
     text-align: justify;
 }
 
+#process_flow {
+    display: none;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 50%;
+    min-height: 100px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
 
+#process_flow p {
+    background: #e3f2fd;
+    padding: 5px;
+    border-radius: 3px;
+    margin: 5px 0;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+#answer-container{
+    width: 80%;
+    display: none;
+    text-align: justify;
+    margin: auto;
+}
+#flow-chart {
+    width: 20%;
+    height: 400px;
+    /*background-color: #f9f9f9;
+    border: 1px solid #ddd;*/
+    width: inherit;
+}
+
+/*only for horizontal flow*/
+/* #process_flow_horizontally{
+    display: flex;         /* Arrange steps in a row *
+    align-items: center;   /* Center them vertically *
+    gap: 20px;             /* Add spacing between steps *
+    margin-top: 20px;
+} */
+
+#process_flow_horizontally {
+    display: flex;         /* Arrange steps in a row */
+    align-items: center;   /* Center them vertically */
+    justify-content: center;
+    gap: 5px;             /* Add spacing between steps */
+    margin-top: 20px;
+}
+
+.step-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.step-circle {
+    width: 80%;
+    height: 40px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: gray;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 10px;
+    /* word-wrap: break-word; */
+    overflow: hidden;
+    line-height: 1.2;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;  /* Initially hidden */
+}
+
+/* Fade-in animation */
+.fade-in {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Hover effect: Scale up and add glow */
+.step-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.8);
+}
+
+/* Ensure text wraps properly inside the circle */
+.step-text {
+    width: 100%;
+    /* word-wrap: break-word; */
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Add arrows between steps */
+.step-container:not(:last-child)::after {
+    content: "→";
+    font-size: 20px;
+    margin-left: 5px;
+    color: #333;
+    opacity: 1;
+    transform: translateX(0px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+/* Show arrows when step appears */
+.visible + .step-container::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 1064px) {
+    #process_flow_horizontally {
+        display: none !important;
+        overflow-x: auto;  /* Enable horizontal scrolling */
+        white-space: nowrap; /* Prevent wrapping of elements */
+        display: flex;
+        justify-content: flex-start; /* Align items to the left */
+        padding-bottom: 10px; /* Add some space for scroll visibility */
+    }
+
+    .step-container {
+        flex: 0 0 auto; /* Ensure elements do not shrink */
+    }
+
+    .step-circle {
+        min-width: 80px; /* Ensure minimum width for visibility */
+    }
+}
 /* Medium screens (tablets, 768px and smaller) */
 @media (max-width: 768px) {
     .page-title {
@@ -113,6 +250,22 @@ button:hover {
     .start-button {
         padding: 8px 16px;
         font-size: 16px;
+    }
+    #process_flow_horizontally {
+        flex-wrap: wrap; /* Allow steps to wrap */
+        gap: 10px; /* Increase spacing for better readability */
+    }
+
+    .step-circle {
+        width: 70px; /* Slightly reduce size */
+        height: 35px;
+        font-size: 11px;
+        padding: 8px;
+    }
+
+    .step-container:not(:last-child)::after {
+        font-size: 16px; /* Reduce arrow size */
+        margin-left: 3px;
     }
 }
 
@@ -130,6 +283,24 @@ button:hover {
     .start-button {
         padding: 6px 12px;
         font-size: 14px;
+    }
+    #process_flow_horizontally {
+        flex-direction: column; /* Stack steps vertically */
+        align-items: center;
+        gap: 8px;
+    }
+
+    .step-circle {
+        width: 80%;
+        height: auto;
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .step-container:not(:last-child)::after {
+        content: "↓"; /* Change arrows to downward for better readability */
+        font-size: 18px;
+        margin: 5px 0;
     }
 }
 
